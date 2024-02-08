@@ -28,6 +28,9 @@ public:
           m_capacity(other.m_capacity),
           m_size(other.m_size) {
         m_data = m_alloc.allocate(m_size);
+        if (m_data == nullptr) {
+            throw std::bad_alloc();
+        }
 
         for (std::size_t i = 0; i < other.m_size; ++i) {
             m_data[i] = other.m_data[i];
@@ -66,12 +69,20 @@ public:
     void push(T new_element) {
         if (m_capacity == 0) {
             m_data = m_alloc.allocate(1);
+            if (m_data == nullptr) {
+                throw std::bad_alloc();
+            }
+
             m_size = 0;
             m_capacity = 1;
         }
 
         if (m_size == m_capacity) {
             auto new_data = m_alloc.allocate(m_capacity * 2);
+            if (new_data == nullptr) {
+                throw std::bad_alloc();
+            }
+
             for (std::size_t i = 0; i < m_size; ++i) {
                 new_data[i] = std::move(m_data[i]);
             }
